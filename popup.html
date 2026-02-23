@@ -331,6 +331,22 @@
     </div>
   </div>
 
+  <!-- ── Safety ────────────────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-title">Safety</div>
+
+    <div class="toggle-row">
+      <div class="tl">
+        <span>Skip sign-out pages</span>
+        <small>Disable automation on Microsoft logout flows so you're never accidentally signed out</small>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="skipLogoutPages" checked />
+        <span class="knob"></span>
+      </label>
+    </div>
+  </div>
+
   <!-- ── Performance ────────────────────────────────────────────────────── -->
   <div class="card">
     <div class="card-title">Performance</div>
@@ -352,6 +368,30 @@
         <small>Max auto-action attempts per page load</small>
       </div>
       <input type="number" class="num-input" id="retryLimit" min="1" max="50" value="10" />
+    </div>
+  </div>
+
+  <!-- ── Display ────────────────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-title">Display</div>
+
+    <div class="toggle-row">
+      <div class="tl">
+        <span>Show on-page indicator</span>
+        <small>Display a "⚡ Fast Login: Active" badge on login pages</small>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="showIndicator" checked />
+        <span class="knob"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row" style="padding-top:8px; padding-bottom:8px; border-top: 1px solid var(--border);">
+      <div class="tl">
+        <a href="#" id="openOnboardingLink" style="font-size:12px; color:var(--accent2); text-decoration:none;">
+          View setup guide &amp; README →
+        </a>
+      </div>
     </div>
   </div>
 

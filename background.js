@@ -1,8 +1,9 @@
 /**
  * Microsoft Fast Login — Background Service Worker
  *
- * Manages dynamic content script registration so URL patterns
- * configured in the popup take effect immediately without reloading the extension.
+ * • Opens the onboarding page on first install
+ * • Manages dynamic content script registration (custom URL patterns)
+ * • Toggles declarativeNetRequest blocking ruleset
  */
 
 const SCRIPT_ID = 'mfl-content';
@@ -12,11 +13,17 @@ const DEFAULT_PATTERNS = [
   'https://api-e4c9863e.duosecurity.com/*',
 ];
 
+// ── First-install onboarding ─────────────────────────────────────────────────
+chrome.runtime.onInstalled.addListener((details) => {
+  if (details.reason === 'install') {
+    chrome.tabs.create({ url: chrome.runtime.getURL('onboarding.html') });
+  }
+});
+
 // ── Register content scripts for the given URL patterns ─────────────────────
 async function applyUrlPatterns(patterns) {
   const active = (patterns && patterns.length > 0) ? patterns : DEFAULT_PATTERNS;
 
-  // Remove existing dynamic registration (ignore errors if not registered yet)
   try {
     await chrome.scripting.unregisterContentScripts({ ids: [SCRIPT_ID] });
   } catch (_) {}
@@ -30,23 +37,23 @@ async function applyUrlPatterns(patterns) {
     persistAcrossSessions: true,
   }]);
 
-  console.log('[MFL Background] Content scripts registered for:', active);
+  console.log('[MFL] Scripts registered for:', active);
 }
 
-// ── Toggle declarativeNetRequest ruleset on/off ──────────────────────────────
+// ── Toggle resource blocking ruleset ────────────────────────────────────────
 async function applyBlockingRules(enabled) {
   await chrome.declarativeNetRequest.updateEnabledRulesets({
     enableRulesetIds:  enabled ? ['block_overhead'] : [],
     disableRulesetIds: enabled ? [] : ['block_overhead'],
   });
-  console.log('[MFL Background] Resource blocking:', enabled ? 'ON' : 'OFF');
+  console.log('[MFL] Resource blocking:', enabled ? 'ON' : 'OFF');
 }
 
 // ── Init on service worker startup ──────────────────────────────────────────
 chrome.storage.local.get(['mflSettings'], async (result) => {
   const s = result.mflSettings || {};
   await applyUrlPatterns(s.urlPatterns || DEFAULT_PATTERNS);
-  await applyBlockingRules(s.blockResources !== false); // default ON
+  await applyBlockingRules(s.blockResources !== false);
 });
 
 // ── Listen for settings changes from popup ───────────────────────────────────
@@ -58,6 +65,6 @@ chrome.runtime.onMessage.addListener((msg, _sender, sendResponse) => {
     ])
       .then(() => sendResponse({ ok: true }))
       .catch((e) => sendResponse({ ok: false, error: e.message }));
-    return true; // keep channel open for async response
+    return true;
   }
 });

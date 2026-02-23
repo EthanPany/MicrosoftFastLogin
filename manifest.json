@@ -6,8 +6,15 @@
   "permissions": [
     "storage",
     "scripting",
+    "tabs",
     "declarativeNetRequest",
     "declarativeNetRequestFeedback"
+  ],
+  "web_accessible_resources": [
+    {
+      "resources": ["onboarding.html"],
+      "matches": ["<all_urls>"]
+    }
   ],
   "host_permissions": ["https://*/*"],
   "background": {

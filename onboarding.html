@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Microsoft Fast Login — Welcome</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:       #0d0f1a;
+      --surface:  #141720;
+      --surface2: #1c2035;
+      --border:   #252a42;
+      --accent:   #5865f2;
+      --accent2:  #7289da;
+      --text:     #e8eaf6;
+      --muted:    #8b90b0;
+      --success:  #43b581;
+      --warn:     #faa61a;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+
+    /* ── Nav ───────────────────────────────────────────────────────────── */
+    nav {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(13,15,26,.85);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 0 32px;
+      display: flex; align-items: center; gap: 12px;
+      height: 54px;
+    }
+    .nav-logo {
+      width: 28px; height: 28px;
+      background: var(--accent);
+      border-radius: 7px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px;
+    }
+    .nav-name { font-size: 14px; font-weight: 700; }
+    .nav-badge {
+      font-size: 10px; font-weight: 700;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 5px;
+      padding: 2px 7px;
+      color: var(--muted);
+      letter-spacing: .5px;
+    }
+    .nav-links { margin-left: auto; display: flex; gap: 20px; }
+    .nav-links a {
+      font-size: 13px; color: var(--muted);
+      text-decoration: none;
+      transition: color .15s;
+    }
+    .nav-links a:hover { color: var(--text); }
+
+    /* ── Wrapper ───────────────────────────────────────────────────────── */
+    .page { max-width: 820px; margin: 0 auto; padding: 0 24px 80px; }
+
+    /* ── Hero ──────────────────────────────────────────────────────────── */
+    .hero {
+      text-align: center;
+      padding: 80px 24px 64px;
+    }
+    .hero-icon {
+      width: 80px; height: 80px;
+      background: linear-gradient(135deg, var(--accent), #7c3aed);
+      border-radius: 22px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 40px;
+      margin: 0 auto 28px;
+      box-shadow: 0 0 60px rgba(88,101,242,.35);
+    }
+    .hero h1 {
+      font-size: clamp(28px, 5vw, 44px);
+      font-weight: 800;
+      letter-spacing: -1px;
+      margin-bottom: 14px;
+      background: linear-gradient(135deg, #fff 30%, var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub {
+      font-size: 17px;
+      color: var(--muted);
+      max-width: 480px;
+      margin: 0 auto 32px;
+      line-height: 1.65;
+    }
+    .hero-sub strong { color: var(--text); }
+
+    .btn-row { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 12px 24px;
+      border-radius: 10px;
+      font-size: 14px; font-weight: 600;
+      text-decoration: none;
+      cursor: pointer;
+      transition: transform .15s, opacity .15s;
+      border: none;
+    }
+    .btn:hover { opacity: .88; transform: translateY(-1px); }
+    .btn-primary { background: var(--accent); color: #fff; }
+    .btn-ghost {
+      background: var(--surface2);
+      color: var(--text);
+      border: 1px solid var(--border);
+    }
+
+    /* ── Story ─────────────────────────────────────────────────────────── */
+    .story {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 36px 40px;
+      margin-bottom: 56px;
+      position: relative;
+      overflow: hidden;
+    }
+    .story::before {
+      content: '"';
+      position: absolute;
+      top: -10px; left: 28px;
+      font-size: 120px;
+      font-family: Georgia, serif;
+      color: var(--border);
+      line-height: 1;
+      pointer-events: none;
+    }
+    .story-label {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--accent2);
+      margin-bottom: 14px;
+    }
+    .story h2 {
+      font-size: 22px; font-weight: 700;
+      margin-bottom: 16px;
+      letter-spacing: -.3px;
+    }
+    .story p {
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1.75;
+      margin-bottom: 14px;
+    }
+    .story p:last-child { margin-bottom: 0; }
+    .story p strong { color: var(--text); }
+    .story em {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-style: normal;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 13px;
+      color: var(--accent2);
+    }
+
+    /* ── Section header ────────────────────────────────────────────────── */
+    .section-label {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1px;
+      color: var(--accent2);
+      margin-bottom: 8px;
+    }
+    .section-title {
+      font-size: 26px; font-weight: 800;
+      letter-spacing: -.4px;
+      margin-bottom: 6px;
+    }
+    .section-sub {
+      font-size: 14px; color: var(--muted);
+      margin-bottom: 32px;
+    }
+
+    /* ── Feature grid ──────────────────────────────────────────────────── */
+    .features { margin-bottom: 56px; }
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+    }
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+      transition: border-color .2s, transform .2s;
+    }
+    .feature-card:hover { border-color: var(--accent); transform: translateY(-2px); }
+    .feature-icon {
+      font-size: 24px;
+      margin-bottom: 10px;
+      display: block;
+    }
+    .feature-card h3 { font-size: 14px; font-weight: 700; margin-bottom: 5px; }
+    .feature-card p  { font-size: 12px; color: var(--muted); line-height: 1.55; }
+
+    /* ── Setup steps ───────────────────────────────────────────────────── */
+    .setup { margin-bottom: 56px; }
+    .steps { display: flex; flex-direction: column; gap: 14px; }
+    .step {
+      display: flex; gap: 16px; align-items: flex-start;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px 22px;
+      transition: border-color .2s;
+    }
+    .step:hover { border-color: var(--accent); }
+    .step-num {
+      width: 34px; height: 34px;
+      background: var(--accent);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 15px; font-weight: 800;
+      flex-shrink: 0;
+      color: #fff;
+    }
+    .step-body h3 { font-size: 14px; font-weight: 700; margin-bottom: 4px; }
+    .step-body p  { font-size: 13px; color: var(--muted); line-height: 1.55; }
+    .step-body code {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 12px;
+      color: var(--accent2);
+    }
+
+    /* ── Compat note ───────────────────────────────────────────────────── */
+    .compat {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 22px 24px;
+      margin-bottom: 56px;
+    }
+    .compat h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; }
+    .compat-list { list-style: none; display: flex; flex-direction: column; gap: 6px; }
+    .compat-list li {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 13px; color: var(--muted);
+    }
+    .compat-list li::before {
+      content: '✓';
+      color: var(--success);
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    /* ── Security note ─────────────────────────────────────────────────── */
+    .security {
+      background: rgba(88,101,242,.08);
+      border: 1px solid rgba(88,101,242,.25);
+      border-radius: 12px;
+      padding: 18px 22px;
+      margin-bottom: 56px;
+      display: flex;
+      gap: 14px;
+      align-items: flex-start;
+    }
+    .security-icon { font-size: 22px; flex-shrink: 0; margin-top: 1px; }
+    .security h3 { font-size: 13px; font-weight: 700; margin-bottom: 5px; }
+    .security p  { font-size: 12px; color: var(--muted); line-height: 1.6; }
+
+    /* ── Footer ────────────────────────────────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-left { font-size: 12px; color: var(--muted); }
+    .footer-left strong { color: var(--text); }
+    .footer-links { display: flex; gap: 16px; }
+    .footer-links a {
+      font-size: 12px; color: var(--muted);
+      text-decoration: none;
+      transition: color .15s;
+    }
+    .footer-links a:hover { color: var(--text); }
+
+    /* ── Divider ───────────────────────────────────────────────────────── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0 0 48px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Nav -->
+  <nav>
+    <div class="nav-logo">⚡</div>
+    <span class="nav-name">Microsoft Fast Login</span>
+    <span class="nav-badge">v2.0</span>
+    <div class="nav-links">
+      <a href="#story">Story</a>
+      <a href="#features">Features</a>
+      <a href="#setup">Setup</a>
+      <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+    </div>
+  </nav>
+
+  <div class="page">
+
+    <!-- Hero -->
+    <section class="hero">
+      <div class="hero-icon">⚡</div>
+      <h1>Microsoft Fast Login</h1>
+      <p class="hero-sub">
+        Stop getting locked out. <strong>Automate your Microsoft and Duo login flow</strong>
+        so you can get to what actually matters — in one second, not ten clicks.
+      </p>
+      <div class="btn-row">
+        <button class="btn btn-primary" id="openSettingsBtn">
+          ⚡ Open Settings
+        </button>
+        <a class="btn btn-ghost" href="https://github.com" target="_blank" rel="noopener">
+          ★ Star on GitHub
+        </a>
+      </div>
+    </section>
+
+    <!-- Story -->
+    <section id="story" class="story">
+      <p class="story-label">The backstory</p>
+      <h2>I was just trying to check my homework.</h2>
+      <p>
+        Every single time I opened <strong>NYU Brightspace</strong> — the university's learning
+        portal — I got kicked back to the Microsoft login page. Pick your account.
+        Type your password. Wait for the <strong>Duo MFA push</strong>. Approve it.
+        Sometimes get redirected again. Finally land on the dashboard, only to be
+        <strong>logged out again twenty minutes later.</strong>
+      </p>
+      <p>
+        Four clicks minimum. Fifteen seconds on a good day. Multiple times a day,
+        every day. For a page that should just… open.
+      </p>
+      <p>
+        So I built this. A Chrome extension that recognises every step of the
+        Microsoft <em>login.microsoftonline.com</em> flow and handles it automatically —
+        account picker, password page, MFA prompt — while ignoring the
+        <strong>sign-out page</strong> so it never accidentally logs you out.
+      </p>
+      <p>
+        One install. Enter your credentials once. Never think about it again.
+      </p>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- Features -->
+    <section id="features" class="features">
+      <p class="section-label">What it does</p>
+      <h2 class="section-title">Every step, automated.</h2>
+      <p class="section-sub">Each action is individually toggleable — enable only what you need.</p>
+
+      <div class="feature-grid">
+        <div class="feature-card">
+          <span class="feature-icon">👆</span>
+          <h3>Account tile click</h3>
+          <p>Automatically picks your account from the Microsoft account chooser — no click required.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🔑</span>
+          <h3>Password auto-fill</h3>
+          <p>Detects the password-only screen and fills it instantly, triggering Sign In for you.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">📧</span>
+          <h3>Email + password fill</h3>
+          <p>Handles the initial full login form — email field, password field, and submit.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🛡️</span>
+          <h3>Duo MFA trigger</h3>
+          <p>Clicks "Approve with MFA (Duo)" so the push notification fires without any interaction.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🚫</span>
+          <h3>Logout page protection</h3>
+          <p>Detects sign-out pages and stays silent — so automation never accidentally logs you out.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">⚡</span>
+          <h3>Resource blocking</h3>
+          <p>Drops Microsoft telemetry, Bing analytics, and CDN images on login pages to cut load time.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">🌐</span>
+          <h3>Custom URL patterns</h3>
+          <p>Works on any Microsoft SSO domain. Add your org's custom login URL in one click.</p>
+        </div>
+        <div class="feature-card">
+          <span class="feature-icon">👁</span>
+          <h3>On-page indicator</h3>
+          <p>A subtle badge shows when Fast Login is active on the page — toggleable if you prefer clean UI.</p>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- Setup -->
+    <section id="setup" class="setup">
+      <p class="section-label">Get started</p>
+      <h2 class="section-title">Up in 3 steps.</h2>
+      <p class="section-sub">No config files. No scripts to paste. Just fill in a form and go.</p>
+
+      <div class="steps">
+        <div class="step">
+          <div class="step-num">1</div>
+          <div class="step-body">
+            <h3>Open settings</h3>
+            <p>
+              Click the <strong>⚡ icon</strong> in your Chrome toolbar (you may need to pin it
+              via the Extensions menu first). The settings popup will open.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">2</div>
+          <div class="step-body">
+            <h3>Enter your credentials</h3>
+            <p>
+              Type your Microsoft email (e.g. <code>netid@nyu.edu</code>) and password.
+              They're stored locally in <code>chrome.storage.local</code> — never sent anywhere.
+            </p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-num">3</div>
+          <div class="step-body">
+            <h3>Hit Save and you're done</h3>
+            <p>
+              Visit any Microsoft login page. The extension detects the flow and handles
+              each step automatically. Approve the Duo push when it arrives and you're in.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Compatibility -->
+    <div class="compat">
+      <h3>Works with</h3>
+      <ul class="compat-list">
+        <li>NYU Brightspace, NYU Home, and all NYU SSO-protected services</li>
+        <li>Any Microsoft 365 / Azure AD organization login</li>
+        <li>Microsoft personal accounts via login.microsoftonline.com</li>
+        <li>Duo Security MFA (push notification flow)</li>
+        <li>Custom org login URLs — add them in the URL Patterns section</li>
+      </ul>
+    </div>
+
+    <!-- Security -->
+    <div class="security">
+      <span class="security-icon">🔒</span>
+      <div>
+        <h3>Privacy &amp; security</h3>
+        <p>
+          Credentials are stored only in <strong>chrome.storage.local</strong> — isolated to this
+          extension and inaccessible to web pages. No data is ever transmitted to external servers.
+          The extension only activates on configured Microsoft login URLs.
+          <strong>Do not use on shared or untrusted computers.</strong>
+        </p>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-left">
+        Built by <strong>ethanpan</strong> out of frustration with NYU Brightspace.
+      </div>
+      <div class="footer-links">
+        <a href="https://github.com" target="_blank" rel="noopener">GitHub</a>
+        <a href="#" id="openSettingsFooter">Open Settings</a>
+      </div>
+    </footer>
+
+  </div>
+
+  <script>
+    function openPopup() {
+      // Can't programmatically open the popup from a tab page,
+      // so we instruct the user with a brief flash effect on the toolbar icon.
+      // As a convenience, open the extension's options-like page or just show a tip.
+      const btn = document.getElementById('openSettingsBtn');
+      btn.textContent = '⚡ Click the toolbar icon →';
+      btn.style.background = '#43b581';
+      setTimeout(() => {
+        btn.textContent = '⚡ Open Settings';
+        btn.style.background = '';
+      }, 2500);
+    }
+    document.getElementById('openSettingsBtn').addEventListener('click', openPopup);
+    document.getElementById('openSettingsFooter').addEventListener('click', (e) => {
+      e.preventDefault();
+      openPopup();
+    });
+  </script>
+
+</body>
+</html>

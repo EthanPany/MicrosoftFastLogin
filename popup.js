@@ -17,6 +17,8 @@
     retryLimit: 10,
     enabled: true,
     blockResources: true,
+    skipLogoutPages: true,
+    showIndicator: true,
     urlPatterns: [...DEFAULT_PATTERNS],
     actions: {
       accountTile: true,
@@ -39,8 +41,10 @@
     $('emailInput').value     = s.email || '';
     $('passwordInput').value  = s.password || '';
     $('retryLimit').value     = s.retryLimit ?? 10;
-    $('masterToggle').checked = s.enabled !== false;
-    $('blockResources').checked = s.blockResources !== false;
+    $('masterToggle').checked    = s.enabled !== false;
+    $('blockResources').checked  = s.blockResources !== false;
+    $('skipLogoutPages').checked = s.skipLogoutPages !== false;
+    $('showIndicator').checked   = s.showIndicator !== false;
     setMasterLabel(s.enabled !== false);
 
     $('actionAccountTile').checked      = s.actions.accountTile !== false;
@@ -148,8 +152,10 @@
       email,
       password,
       retryLimit,
-      enabled:        $('masterToggle').checked,
-      blockResources: $('blockResources').checked,
+      enabled:         $('masterToggle').checked,
+      blockResources:  $('blockResources').checked,
+      skipLogoutPages: $('skipLogoutPages').checked,
+      showIndicator:   $('showIndicator').checked,
       urlPatterns,
       actions: {
         accountTile:       $('actionAccountTile').checked,
@@ -174,6 +180,12 @@
         showStatus('Settings saved!', 'ok');
       });
     });
+  });
+
+  // ── Onboarding link ────────────────────────────────────────────────────────
+  $('openOnboardingLink').addEventListener('click', (e) => {
+    e.preventDefault();
+    chrome.tabs.create({ url: chrome.runtime.getURL('onboarding.html') });
   });
 
   // ── Status toast ───────────────────────────────────────────────────────────
