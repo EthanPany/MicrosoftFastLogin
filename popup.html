@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Microsoft Fast Login</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:          #0f1117;
+      --surface:     #1a1d27;
+      --surface2:    #22263a;
+      --border:      #2e3350;
+      --accent:      #5865f2;
+      --accent-h:    #4752c4;
+      --text:        #e8eaf6;
+      --muted:       #8b90b0;
+      --success:     #43b581;
+      --danger:      #f04747;
+      --warn-bg:     rgba(240,71,71,.1);
+      --warn-border: rgba(240,71,71,.3);
+      --r:   10px;
+      --rsm:  6px;
+    }
+
+    body {
+      width: 380px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+      line-height: 1.5;
+      padding-bottom: 10px;
+    }
+
+    /* ── Header ─────────────────────────────────── */
+    .header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 14px 14px 12px;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo {
+      width: 34px; height: 34px;
+      background: var(--accent);
+      border-radius: 9px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px; flex-shrink: 0;
+    }
+    .header h1 { font-size: 14px; font-weight: 700; letter-spacing: -.2px; }
+    .header p  { font-size: 11px; color: var(--muted); }
+    .master-wrap { margin-left: auto; display: flex; align-items: center; gap: 8px; }
+    .master-wrap span { font-size: 11px; color: var(--muted); }
+
+    /* ── Section card ───────────────────────────── */
+    .card {
+      margin: 10px 12px 0;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--r);
+      overflow: hidden;
+    }
+    .card-title {
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: .8px;
+      color: var(--muted);
+      padding: 9px 13px 6px;
+    }
+
+    /* ── Field row ──────────────────────────────── */
+    .field {
+      padding: 7px 13px 9px;
+      border-top: 1px solid var(--border);
+    }
+    .field:first-of-type { border-top: none; }
+    .field label { display: block; font-size: 11px; color: var(--muted); font-weight: 500; margin-bottom: 4px; }
+
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="number"],
+    textarea {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--rsm);
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+      padding: 7px 10px;
+      outline: none;
+      width: 100%;
+      transition: border-color .15s;
+    }
+    input:focus, textarea:focus { border-color: var(--accent); }
+    textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
+
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 36px; }
+    .eye-btn {
+      position: absolute; right: 10px; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); font-size: 14px; padding: 0;
+      display: flex; align-items: center;
+    }
+    .eye-btn:hover { color: var(--text); }
+
+    .field-hint {
+      font-size: 10px; color: var(--muted);
+      margin-top: 4px; line-height: 1.5;
+    }
+
+    /* ── Toggle row ─────────────────────────────── */
+    .toggle-row {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 9px 13px;
+      border-top: 1px solid var(--border);
+    }
+    .toggle-row:first-child { border-top: none; }
+    .tl span  { font-size: 13px; font-weight: 500; }
+    .tl small { display: block; font-size: 11px; color: var(--muted); }
+
+    .switch { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
+    .switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .knob {
+      position: absolute; inset: 0;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: 20px; cursor: pointer;
+      transition: background .2s, border-color .2s;
+    }
+    .knob::before {
+      content: ''; position: absolute;
+      width: 14px; height: 14px; left: 2px; top: 50%;
+      transform: translateY(-50%);
+      background: var(--muted); border-radius: 50%;
+      transition: transform .2s, background .2s;
+    }
+    .switch input:checked + .knob { background: var(--accent); border-color: var(--accent); }
+    .switch input:checked + .knob::before { transform: translate(16px, -50%); background: #fff; }
+
+    /* inline number input */
+    .num-input {
+      width: 60px; text-align: center;
+      padding: 5px 8px; font-size: 13px;
+    }
+
+    /* ── URL pattern list ───────────────────────── */
+    .url-list { list-style: none; }
+    .url-item {
+      display: flex; align-items: center; gap: 6px;
+      padding: 5px 13px;
+      border-top: 1px solid var(--border);
+      font-size: 12px;
+    }
+    .url-item:first-child { border-top: none; }
+    .url-item code {
+      flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+      color: var(--text); font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px;
+    }
+    .url-item .badge {
+      font-size: 9px; font-weight: 700; letter-spacing: .4px;
+      padding: 2px 5px; border-radius: 4px;
+      background: var(--accent); color: #fff; flex-shrink: 0;
+    }
+    .url-item .badge.custom { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+    .del-btn {
+      background: none; border: none; cursor: pointer;
+      color: var(--muted); font-size: 15px; line-height: 1;
+      padding: 0 2px; flex-shrink: 0;
+      transition: color .15s;
+    }
+    .del-btn:hover { color: var(--danger); }
+
+    .add-url-row {
+      display: flex; gap: 6px;
+      padding: 7px 13px;
+      border-top: 1px solid var(--border);
+    }
+    .add-url-row input { flex: 1; font-size: 12px; padding: 5px 9px; }
+    .add-btn {
+      background: var(--accent); color: #fff;
+      border: none; border-radius: var(--rsm);
+      padding: 5px 12px; font-size: 12px; font-weight: 600;
+      cursor: pointer; flex-shrink: 0; transition: background .15s;
+    }
+    .add-btn:hover { background: var(--accent-h); }
+
+    /* ── Warning banner ─────────────────────────── */
+    .warning {
+      margin: 10px 12px 0;
+      background: var(--warn-bg);
+      border: 1px solid var(--warn-border);
+      border-radius: var(--rsm);
+      padding: 7px 11px;
+      font-size: 11px; color: #f47f7f; line-height: 1.5;
+    }
+    .warning strong { color: var(--danger); }
+
+    /* ── Save button ────────────────────────────── */
+    .save-btn {
+      display: block;
+      width: calc(100% - 24px);
+      margin: 10px 12px 2px;
+      padding: 10px;
+      background: var(--accent); color: #fff;
+      font-size: 13px; font-weight: 600;
+      border: none; border-radius: var(--r);
+      cursor: pointer; letter-spacing: .2px;
+      transition: background .15s, transform .1s;
+    }
+    .save-btn:hover { background: var(--accent-h); }
+    .save-btn:active { transform: scale(.98); }
+
+    /* ── Status ─────────────────────────────────── */
+    .status {
+      text-align: center; font-size: 11px;
+      padding: 5px 16px 0; height: 20px;
+      transition: color .2s; color: transparent;
+    }
+    .status.ok  { color: var(--success); }
+    .status.err { color: var(--danger); }
+  </style>
+</head>
+<body>
+
+  <!-- ── Header ─────────────────────────────────────────────────────────── -->
+  <div class="header">
+    <div class="logo">⚡</div>
+    <div>
+      <h1>Microsoft Fast Login</h1>
+      <p>Automated login &amp; MFA flow</p>
+    </div>
+    <div class="master-wrap">
+      <span id="masterLabel">Enabled</span>
+      <label class="switch">
+        <input type="checkbox" id="masterToggle" checked />
+        <span class="knob"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- ── Security note ──────────────────────────────────────────────────── -->
+  <div class="warning">
+    <strong>Note:</strong> Credentials are stored via <code>chrome.storage.local</code>.
+    Do not use this extension on a shared or untrusted computer.
+  </div>
+
+  <!-- ── Credentials ────────────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-title">Credentials</div>
+    <div class="field">
+      <label for="emailInput">Microsoft Email</label>
+      <input type="email" id="emailInput" placeholder="you@domain.com" autocomplete="off" />
+    </div>
+    <div class="field">
+      <label for="passwordInput">Password</label>
+      <div class="pw-wrap">
+        <input type="password" id="passwordInput" placeholder="••••••••••••" autocomplete="off" />
+        <button class="eye-btn" id="togglePass" title="Show / hide">
+          <span id="eyeIcon">👁</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── URL Patterns ───────────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-title">Active URL Patterns</div>
+    <ul class="url-list" id="urlList"></ul>
+    <div class="add-url-row">
+      <input type="text" id="urlInput" placeholder="https://login.example.com/*" />
+      <button class="add-btn" id="addUrlBtn">Add</button>
+    </div>
+    <div class="field" style="padding-top:0; border-top: 1px solid var(--border);">
+      <p class="field-hint">
+        Patterns use Chrome match syntax (<code>https://host/*</code>).
+        Default patterns cannot be removed.
+      </p>
+    </div>
+  </div>
+
+  <!-- ── Automation Steps ───────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-title">Automation Steps</div>
+
+    <div class="toggle-row">
+      <div class="tl">
+        <span>Click account tile</span>
+        <small>Auto-select your account from the picker</small>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="actionAccountTile" checked />
+        <span class="knob"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row">
+      <div class="tl">
+        <span>Fill password page</span>
+        <small>Auto-fill when only the password field is visible</small>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="actionPasswordPage" checked />
+        <span class="knob"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row">
+      <div class="tl">
+        <span>Fill email + password</span>
+        <small>Auto-fill both fields on the initial login screen</small>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="actionEmailPasswordPage" checked />
+        <span class="knob"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row">
+      <div class="tl">
+        <span>Click "Approve with MFA"</span>
+        <small>Auto-click the Duo MFA prompt button</small>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="actionMfaButton" checked />
+        <span class="knob"></span>
+      </label>
+    </div>
+  </div>
+
+  <!-- ── Performance ────────────────────────────────────────────────────── -->
+  <div class="card">
+    <div class="card-title">Performance</div>
+
+    <div class="toggle-row">
+      <div class="tl">
+        <span>Block tracking &amp; overhead</span>
+        <small>Drops telemetry, analytics &amp; CDN images on login pages</small>
+      </div>
+      <label class="switch">
+        <input type="checkbox" id="blockResources" checked />
+        <span class="knob"></span>
+      </label>
+    </div>
+
+    <div class="toggle-row">
+      <div class="tl">
+        <span>Retry limit</span>
+        <small>Max auto-action attempts per page load</small>
+      </div>
+      <input type="number" class="num-input" id="retryLimit" min="1" max="50" value="10" />
+    </div>
+  </div>
+
+  <button class="save-btn" id="saveBtn">Save Settings</button>
+  <div class="status" id="status"></div>
+
+  <script src="popup.js"></script>
+</body>
+</html>

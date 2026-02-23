@@ -1,0 +1,72 @@
+[
+  {
+    "id": 1,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||c.microsoft.com^",
+      "initiatorDomains": ["login.microsoftonline.com"],
+      "resourceTypes": ["xmlhttprequest", "ping", "script", "image", "media"]
+    }
+  },
+  {
+    "id": 2,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||bat.bing.com^",
+      "initiatorDomains": ["login.microsoftonline.com"],
+      "resourceTypes": ["xmlhttprequest", "ping", "script", "image"]
+    }
+  },
+  {
+    "id": 3,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||aefd.nelreports.net^",
+      "initiatorDomains": ["login.microsoftonline.com"],
+      "resourceTypes": ["xmlhttprequest", "ping"]
+    }
+  },
+  {
+    "id": 4,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||deff.nelreports.net^",
+      "initiatorDomains": ["login.microsoftonline.com"],
+      "resourceTypes": ["xmlhttprequest", "ping"]
+    }
+  },
+  {
+    "id": 5,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||oca.microsoft.com^",
+      "initiatorDomains": ["login.microsoftonline.com"],
+      "resourceTypes": ["xmlhttprequest", "ping"]
+    }
+  },
+  {
+    "id": 6,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||www.bing.com^",
+      "initiatorDomains": ["login.microsoftonline.com"],
+      "resourceTypes": ["xmlhttprequest", "ping", "image", "script"]
+    }
+  },
+  {
+    "id": 7,
+    "priority": 1,
+    "action": { "type": "block" },
+    "condition": {
+      "urlFilter": "||img-prod-cms-rt-microsoft-com.akamaized.net^",
+      "initiatorDomains": ["login.microsoftonline.com"],
+      "resourceTypes": ["image", "media"]
+    }
+  }
+]
