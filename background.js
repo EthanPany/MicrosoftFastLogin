@@ -10,7 +10,7 @@ const SCRIPT_ID = 'mfl-content';
 
 const DEFAULT_PATTERNS = [
   'https://login.microsoftonline.com/*',
-  'https://api-e4c9863e.duosecurity.com/*',
+  'https://*.duosecurity.com/*',
 ];
 
 // ── First-install onboarding ─────────────────────────────────────────────────

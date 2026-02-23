@@ -8,7 +8,7 @@
 
   const DEFAULT_PATTERNS = [
     'https://login.microsoftonline.com/*',
-    'https://api-e4c9863e.duosecurity.com/*',
+    'https://*.duosecurity.com/*',
   ];
 
   const DEFAULTS = {
@@ -40,7 +40,7 @@
 
     $('emailInput').value     = s.email || '';
     $('passwordInput').value  = s.password || '';
-    $('retryLimit').value     = s.retryLimit ?? 10;
+    $('retryLimit').value     = s.retryLimit ?? 2;
     $('masterToggle').checked    = s.enabled !== false;
     $('blockResources').checked  = s.blockResources !== false;
     $('skipLogoutPages').checked = s.skipLogoutPages !== false;
@@ -64,25 +64,35 @@
 
     // Default patterns (non-removable)
     for (const p of DEFAULT_PATTERNS) {
-      const li = document.createElement('li');
+      const li   = document.createElement('li');
       li.className = 'url-item';
-      li.innerHTML = `
-        <code title="${p}">${p}</code>
-        <span class="badge">default</span>
-      `;
+      const code = document.createElement('code');
+      code.title       = p;
+      code.textContent = p;
+      const badge = document.createElement('span');
+      badge.className   = 'badge';
+      badge.textContent = 'default';
+      li.append(code, badge);
       list.appendChild(li);
     }
 
     // Custom patterns (removable)
     for (let i = 0; i < customPatterns.length; i++) {
-      const p = customPatterns[i];
+      const p  = customPatterns[i];
       const li = document.createElement('li');
       li.className = 'url-item';
-      li.innerHTML = `
-        <code title="${p}">${p}</code>
-        <span class="badge custom">custom</span>
-        <button class="del-btn" data-idx="${i}" title="Remove">×</button>
-      `;
+      const code = document.createElement('code');
+      code.title       = p;
+      code.textContent = p;
+      const badge = document.createElement('span');
+      badge.className   = 'badge custom';
+      badge.textContent = 'custom';
+      const del = document.createElement('button');
+      del.className        = 'del-btn';
+      del.dataset.idx      = i;
+      del.title            = 'Remove';
+      del.textContent      = '×';
+      li.append(code, badge, del);
       list.appendChild(li);
     }
   }
@@ -186,7 +196,6 @@
   $('openOnboardingLink').addEventListener('click', (e) => {
     e.preventDefault();
     chrome.tabs.create({ url: chrome.runtime.getURL('onboarding.html') });
-    // GitHub: https://github.com/EthanPany/MicrosoftFastLogin
   });
 
   // ── Status toast ───────────────────────────────────────────────────────────

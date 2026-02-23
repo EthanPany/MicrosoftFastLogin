@@ -113,7 +113,8 @@
 
   function setIndicatorText(msg) {
     if (!indicator) return;
-    indicator.innerHTML = `⚡ Fast Login: ${msg}`;
+    const iconUrl = chrome.runtime.getURL('icons/icon16.png');
+    indicator.innerHTML = `<img src="${iconUrl}" style="width:14px;height:14px;vertical-align:middle;margin-right:4px;"> Fast Login: ${msg}`;
   }
 
   function flashIndicator(msg, durationMs = 1500) {
@@ -195,8 +196,6 @@
         }
       }
 
-      const passInput  = document.querySelector('input[type="password"]');
-      const emailInput = document.querySelector('input[type="email"]');
       const emailVisible = visibleInput('email');
       const passVisible  = visibleInput('password');
 
@@ -205,7 +204,7 @@
         LOG('Password page — filling.');
         flashIndicator('Filling password…');
         act('password', () => {
-          fillInput(passInput, settings.password);
+          fillInput(passVisible, settings.password);
           setTimeout(clickSignIn, 100);
         });
         return;
@@ -216,12 +215,12 @@
         LOG('Email + password page — filling.');
         flashIndicator('Filling credentials…');
         act('email', () => {
-          fillInput(emailInput, settings.email);
+          fillInput(emailVisible, settings.email);
           if (passVisible) {
-            fillInput(passInput, settings.password);
+            fillInput(passVisible, settings.password);
             setTimeout(clickSignIn, 100);
           } else {
-            // Only email field — submit and wait for password page
+            // Email-only field — submit and wait for password page
             setTimeout(clickSignIn, 100);
           }
         });
@@ -252,6 +251,9 @@
 
   function act(actionName, fn) {
     acted = true;
+    // Each distinct step (tile → email → password → mfa) gets its own retry window.
+    // Only increment and check the counter when we're retrying the SAME step.
+    if (lastAction !== actionName) retryCount = 0;
     lastAction = actionName;
     retryCount++;
     fn();

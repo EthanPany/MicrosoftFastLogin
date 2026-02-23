@@ -1,27 +1,34 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Microsoft Fast Login</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     :root {
-      --bg:          #0f1117;
-      --surface:     #1a1d27;
-      --surface2:    #22263a;
-      --border:      #2e3350;
-      --accent:      #5865f2;
-      --accent-h:    #4752c4;
-      --text:        #e8eaf6;
-      --muted:       #8b90b0;
-      --success:     #43b581;
-      --danger:      #f04747;
-      --warn-bg:     rgba(240,71,71,.1);
-      --warn-border: rgba(240,71,71,.3);
-      --r:   10px;
-      --rsm:  6px;
+      --bg: #0f1117;
+      --surface: #1a1d27;
+      --surface2: #22263a;
+      --border: #2e3350;
+      --accent: #5865f2;
+      --accent-h: #4752c4;
+      --text: #e8eaf6;
+      --muted: #8b90b0;
+      --success: #43b581;
+      --danger: #f04747;
+      --warn-bg: rgba(240, 71, 71, .1);
+      --warn-border: rgba(240, 71, 71, .3);
+      --r: 10px;
+      --rsm: 6px;
     }
 
     body {
@@ -42,17 +49,41 @@
       padding: 14px 14px 12px;
       border-bottom: 1px solid var(--border);
     }
+
     .logo {
-      width: 34px; height: 34px;
+      width: 34px;
+      height: 34px;
       background: var(--accent);
       border-radius: 9px;
-      display: flex; align-items: center; justify-content: center;
-      font-size: 18px; flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
     }
-    .header h1 { font-size: 14px; font-weight: 700; letter-spacing: -.2px; }
-    .header p  { font-size: 11px; color: var(--muted); }
-    .master-wrap { margin-left: auto; display: flex; align-items: center; gap: 8px; }
-    .master-wrap span { font-size: 11px; color: var(--muted); }
+
+    .header h1 {
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: -.2px;
+    }
+
+    .header p {
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .master-wrap {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .master-wrap span {
+      font-size: 11px;
+      color: var(--muted);
+    }
 
     /* ── Section card ───────────────────────────── */
     .card {
@@ -62,9 +93,12 @@
       border-radius: var(--r);
       overflow: hidden;
     }
+
     .card-title {
-      font-size: 10px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: .8px;
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .8px;
       color: var(--muted);
       padding: 9px 13px 6px;
     }
@@ -74,8 +108,18 @@
       padding: 7px 13px 9px;
       border-top: 1px solid var(--border);
     }
-    .field:first-of-type { border-top: none; }
-    .field label { display: block; font-size: 11px; color: var(--muted); font-weight: 500; margin-bottom: 4px; }
+
+    .field:first-of-type {
+      border-top: none;
+    }
+
+    .field label {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+      font-weight: 500;
+      margin-bottom: 4px;
+    }
 
     input[type="text"],
     input[type="email"],
@@ -93,100 +137,221 @@
       width: 100%;
       transition: border-color .15s;
     }
-    input:focus, textarea:focus { border-color: var(--accent); }
-    textarea { resize: vertical; min-height: 80px; line-height: 1.6; }
 
-    .pw-wrap { position: relative; }
-    .pw-wrap input { padding-right: 36px; }
-    .eye-btn {
-      position: absolute; right: 10px; top: 50%;
-      transform: translateY(-50%);
-      background: none; border: none; cursor: pointer;
-      color: var(--muted); font-size: 14px; padding: 0;
-      display: flex; align-items: center;
+    input:focus,
+    textarea:focus {
+      border-color: var(--accent);
     }
-    .eye-btn:hover { color: var(--text); }
+
+    textarea {
+      resize: vertical;
+      min-height: 80px;
+      line-height: 1.6;
+    }
+
+    .pw-wrap {
+      position: relative;
+    }
+
+    .pw-wrap input {
+      padding-right: 36px;
+    }
+
+    .eye-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 14px;
+      padding: 0;
+      display: flex;
+      align-items: center;
+    }
+
+    .eye-btn:hover {
+      color: var(--text);
+    }
 
     .field-hint {
-      font-size: 10px; color: var(--muted);
-      margin-top: 4px; line-height: 1.5;
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 4px;
+      line-height: 1.5;
     }
 
     /* ── Toggle row ─────────────────────────────── */
     .toggle-row {
-      display: flex; align-items: center; justify-content: space-between;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
       padding: 9px 13px;
       border-top: 1px solid var(--border);
     }
-    .toggle-row:first-child { border-top: none; }
-    .tl span  { font-size: 13px; font-weight: 500; }
-    .tl small { display: block; font-size: 11px; color: var(--muted); }
 
-    .switch { position: relative; width: 36px; height: 20px; flex-shrink: 0; }
-    .switch input { opacity: 0; width: 0; height: 0; position: absolute; }
+    .toggle-row:first-child {
+      border-top: none;
+    }
+
+    .tl span {
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .tl small {
+      display: block;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .switch {
+      position: relative;
+      width: 36px;
+      height: 20px;
+      flex-shrink: 0;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+      position: absolute;
+    }
+
     .knob {
-      position: absolute; inset: 0;
+      position: absolute;
+      inset: 0;
       background: var(--surface2);
       border: 1px solid var(--border);
-      border-radius: 20px; cursor: pointer;
+      border-radius: 20px;
+      cursor: pointer;
       transition: background .2s, border-color .2s;
     }
+
     .knob::before {
-      content: ''; position: absolute;
-      width: 14px; height: 14px; left: 2px; top: 50%;
+      content: '';
+      position: absolute;
+      width: 14px;
+      height: 14px;
+      left: 2px;
+      top: 50%;
       transform: translateY(-50%);
-      background: var(--muted); border-radius: 50%;
+      background: var(--muted);
+      border-radius: 50%;
       transition: transform .2s, background .2s;
     }
-    .switch input:checked + .knob { background: var(--accent); border-color: var(--accent); }
-    .switch input:checked + .knob::before { transform: translate(16px, -50%); background: #fff; }
+
+    .switch input:checked+.knob {
+      background: var(--accent);
+      border-color: var(--accent);
+    }
+
+    .switch input:checked+.knob::before {
+      transform: translate(16px, -50%);
+      background: #fff;
+    }
 
     /* inline number input */
     .num-input {
-      width: 60px; text-align: center;
-      padding: 5px 8px; font-size: 13px;
+      width: 60px;
+      text-align: center;
+      padding: 5px 8px;
+      font-size: 13px;
     }
 
     /* ── URL pattern list ───────────────────────── */
-    .url-list { list-style: none; }
+    .url-list {
+      list-style: none;
+    }
+
     .url-item {
-      display: flex; align-items: center; gap: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
       padding: 5px 13px;
       border-top: 1px solid var(--border);
       font-size: 12px;
     }
-    .url-item:first-child { border-top: none; }
+
+    .url-item:first-child {
+      border-top: none;
+    }
+
     .url-item code {
-      flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
-      color: var(--text); font-family: 'SF Mono', 'Fira Code', monospace; font-size: 11px;
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      color: var(--text);
+      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-size: 11px;
     }
+
     .url-item .badge {
-      font-size: 9px; font-weight: 700; letter-spacing: .4px;
-      padding: 2px 5px; border-radius: 4px;
-      background: var(--accent); color: #fff; flex-shrink: 0;
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: .4px;
+      padding: 2px 5px;
+      border-radius: 4px;
+      background: var(--accent);
+      color: #fff;
+      flex-shrink: 0;
     }
-    .url-item .badge.custom { background: var(--surface2); color: var(--muted); border: 1px solid var(--border); }
+
+    .url-item .badge.custom {
+      background: var(--surface2);
+      color: var(--muted);
+      border: 1px solid var(--border);
+    }
+
     .del-btn {
-      background: none; border: none; cursor: pointer;
-      color: var(--muted); font-size: 15px; line-height: 1;
-      padding: 0 2px; flex-shrink: 0;
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      font-size: 15px;
+      line-height: 1;
+      padding: 0 2px;
+      flex-shrink: 0;
       transition: color .15s;
     }
-    .del-btn:hover { color: var(--danger); }
+
+    .del-btn:hover {
+      color: var(--danger);
+    }
 
     .add-url-row {
-      display: flex; gap: 6px;
+      display: flex;
+      gap: 6px;
       padding: 7px 13px;
       border-top: 1px solid var(--border);
     }
-    .add-url-row input { flex: 1; font-size: 12px; padding: 5px 9px; }
-    .add-btn {
-      background: var(--accent); color: #fff;
-      border: none; border-radius: var(--rsm);
-      padding: 5px 12px; font-size: 12px; font-weight: 600;
-      cursor: pointer; flex-shrink: 0; transition: background .15s;
+
+    .add-url-row input {
+      flex: 1;
+      font-size: 12px;
+      padding: 5px 9px;
     }
-    .add-btn:hover { background: var(--accent-h); }
+
+    .add-btn {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--rsm);
+      padding: 5px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      flex-shrink: 0;
+      transition: background .15s;
+    }
+
+    .add-btn:hover {
+      background: var(--accent-h);
+    }
 
     /* ── Warning banner ─────────────────────────── */
     .warning {
@@ -195,9 +360,14 @@
       border: 1px solid var(--warn-border);
       border-radius: var(--rsm);
       padding: 7px 11px;
-      font-size: 11px; color: #f47f7f; line-height: 1.5;
+      font-size: 11px;
+      color: #f47f7f;
+      line-height: 1.5;
     }
-    .warning strong { color: var(--danger); }
+
+    .warning strong {
+      color: var(--danger);
+    }
 
     /* ── Save button ────────────────────────────── */
     .save-btn {
@@ -205,30 +375,50 @@
       width: calc(100% - 24px);
       margin: 10px 12px 2px;
       padding: 10px;
-      background: var(--accent); color: #fff;
-      font-size: 13px; font-weight: 600;
-      border: none; border-radius: var(--r);
-      cursor: pointer; letter-spacing: .2px;
+      background: var(--accent);
+      color: #fff;
+      font-size: 13px;
+      font-weight: 600;
+      border: none;
+      border-radius: var(--r);
+      cursor: pointer;
+      letter-spacing: .2px;
       transition: background .15s, transform .1s;
     }
-    .save-btn:hover { background: var(--accent-h); }
-    .save-btn:active { transform: scale(.98); }
+
+    .save-btn:hover {
+      background: var(--accent-h);
+    }
+
+    .save-btn:active {
+      transform: scale(.98);
+    }
 
     /* ── Status ─────────────────────────────────── */
     .status {
-      text-align: center; font-size: 11px;
-      padding: 5px 16px 0; height: 20px;
-      transition: color .2s; color: transparent;
+      text-align: center;
+      font-size: 11px;
+      padding: 5px 16px 0;
+      height: 20px;
+      transition: color .2s;
+      color: transparent;
     }
-    .status.ok  { color: var(--success); }
-    .status.err { color: var(--danger); }
+
+    .status.ok {
+      color: var(--success);
+    }
+
+    .status.err {
+      color: var(--danger);
+    }
   </style>
 </head>
+
 <body>
 
   <!-- ── Header ─────────────────────────────────────────────────────────── -->
   <div class="header">
-    <div class="logo">⚡</div>
+    <img src="icons/icon48.png" alt="Logo" class="logo" style="background: none; padding: 0;" />
     <div>
       <h1>Microsoft Fast Login</h1>
       <p>Automated login &amp; MFA flow</p>
@@ -378,7 +568,7 @@
     <div class="toggle-row">
       <div class="tl">
         <span>Show on-page indicator</span>
-        <small>Display a "⚡ Fast Login: Active" badge on login pages</small>
+        <small>Display a "Fast Login: Active" badge on login pages</small>
       </div>
       <label class="switch">
         <input type="checkbox" id="showIndicator" checked />
@@ -400,4 +590,5 @@
 
   <script src="popup.js"></script>
 </body>
+
 </html>
