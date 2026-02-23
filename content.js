@@ -13,7 +13,7 @@
   const DEFAULTS = {
     email: '',
     password: '',
-    retryLimit: 10,
+    retryLimit: 2,
     enabled: true,
     skipLogoutPages: true,
     showIndicator: true,
@@ -28,6 +28,7 @@
   let settings   = null;
   let retryCount = 0;
   let acted      = false;
+  let lastAction = null; // track which step fired last
   let observer   = null;
   let pollTimer  = null;
   let indicator  = null;
@@ -43,31 +44,21 @@
       return;
     }
 
-    // ── Logout page guard ──────────────────────────────────────────────────
     if (settings.skipLogoutPages && isLogoutPage()) {
       LOG('Sign-out page detected — staying silent.');
       return;
     }
 
     LOG(`Ready. Retry limit: ${settings.retryLimit}`);
-
     if (settings.showIndicator) injectIndicator();
     start();
   });
 
   // ── Logout detection ───────────────────────────────────────────────────────
-  // Microsoft uses the same login.microsoftonline.com domain for both login and
-  // logout flows. We detect the logout context by URL path and page content.
   function isLogoutPage() {
     const url = window.location.href.toLowerCase();
-
-    // URL-based hints
     if (/logout|signout|sign[-_]?out/.test(url)) return true;
-
-    // Page heading — checked immediately and also deferred in case of late render
-    if (logoutHeadingPresent()) return true;
-
-    return false;
+    return logoutHeadingPresent();
   }
 
   function logoutHeadingPresent() {
@@ -77,10 +68,7 @@
       'you signed out',
       'choose an account to sign out',
     ];
-    const candidates = document.querySelectorAll(
-      'h1, h2, h3, [role="heading"], .text-title, .sign-in-box-text'
-    );
-    for (const el of candidates) {
+    for (const el of document.querySelectorAll('h1, h2, h3, [role="heading"], .text-title')) {
       const t = (el.innerText || '').toLowerCase();
       if (LOGOUT_PHRASES.some((p) => t.includes(p))) return true;
     }
@@ -89,38 +77,38 @@
 
   // ── On-page indicator ──────────────────────────────────────────────────────
   function injectIndicator() {
-    if (indicator) return;
+    if (indicator || !document.body) return;
     indicator = document.createElement('div');
     indicator.id = 'mfl-indicator';
     Object.assign(indicator.style, {
-      position:     'fixed',
-      bottom:       '14px',
-      right:        '14px',
-      background:   'rgba(88, 101, 242, 0.93)',
-      color:        '#fff',
-      padding:      '6px 13px',
-      borderRadius: '20px',
-      fontFamily:   "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
-      fontSize:     '12px',
-      fontWeight:   '600',
-      letterSpacing:'.2px',
-      zIndex:       '2147483647',
-      display:      'flex',
-      alignItems:   'center',
-      gap:          '6px',
-      boxShadow:    '0 2px 14px rgba(0,0,0,.45)',
-      transition:   'opacity .4s',
-      pointerEvents:'none',
-      userSelect:   'none',
-      lineHeight:   '1',
+      position:      'fixed',
+      bottom:        '14px',
+      right:         '14px',
+      background:    'rgba(88, 101, 242, 0.93)',
+      color:         '#fff',
+      padding:       '6px 13px',
+      borderRadius:  '20px',
+      fontFamily:    "-apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif",
+      fontSize:      '12px',
+      fontWeight:    '600',
+      letterSpacing: '.2px',
+      zIndex:        '2147483647',
+      display:       'flex',
+      alignItems:    'center',
+      gap:           '6px',
+      boxShadow:     '0 2px 14px rgba(0,0,0,.45)',
+      transition:    'opacity .4s',
+      pointerEvents: 'none',
+      userSelect:    'none',
+      lineHeight:    '1',
     });
     setIndicatorText('Active');
-    // Wait for body to exist before appending
-    const attach = () => {
-      if (document.body) document.body.appendChild(indicator);
-      else document.addEventListener('DOMContentLoaded', () => document.body.appendChild(indicator));
-    };
-    attach();
+    document.body.appendChild(indicator);
+  }
+
+  function ensureIndicator() {
+    if (!settings || !settings.showIndicator) return;
+    if (!indicator) injectIndicator();
   }
 
   function setIndicatorText(msg) {
@@ -128,17 +116,18 @@
     indicator.innerHTML = `⚡ Fast Login: ${msg}`;
   }
 
-  function flashIndicator(msg, durationMs = 2000) {
-    if (!indicator) return;
+  function flashIndicator(msg, durationMs = 1500) {
+    ensureIndicator();
     setIndicatorText(msg);
     setTimeout(() => setIndicatorText('Active'), durationMs);
   }
 
   // ── Orchestration ──────────────────────────────────────────────────────────
   function start() {
-    setTimeout(tryAction, 800);
-    setTimeout(tryAction, 1800);
-    setTimeout(tryAction, 3000);
+    // Fire quickly — first attempt at 150ms so we catch pages that load fast
+    setTimeout(tryAction, 150);
+    setTimeout(tryAction, 500);
+    setTimeout(tryAction, 1200);
 
     if (document.body) {
       attachObserver();
@@ -147,7 +136,6 @@
     }
 
     pollTimer = setInterval(() => {
-      // Re-check for logout page on every poll cycle (SPA navigation)
       if (settings.skipLogoutPages && (isLogoutPage() || logoutHeadingPresent())) {
         setIndicatorText('Paused — sign-out page');
         return;
@@ -155,25 +143,36 @@
       setIndicatorText('Active');
       acted = false;
       tryAction();
-    }, 5000);
+    }, 3000);
   }
 
   function attachObserver() {
     observer = new MutationObserver(() => {
+      // If we just submitted an email form, eagerly unblock `acted` as
+      // soon as the password field appears (SPA transition happened)
+      if (acted && lastAction === 'email') {
+        const passNowVisible = visibleInput('password');
+        const emailGone = !visibleInput('email');
+        if (passNowVisible && emailGone) {
+          LOG('SPA transition detected — unblocking for password page.');
+          acted = false;
+        }
+      }
+
       if (settings.skipLogoutPages && logoutHeadingPresent()) {
         setIndicatorText('Paused — sign-out page');
         return;
       }
-      setTimeout(tryAction, 500);
+      setTimeout(tryAction, 150);
     });
     observer.observe(document.body, { childList: true, subtree: true });
   }
 
   function stop() {
     LOG(`Retry limit (${settings.retryLimit}) reached — stopping.`);
-    setIndicatorText('Limit reached');
-    if (observer)   observer.disconnect();
-    if (pollTimer)  clearInterval(pollTimer);
+    setIndicatorText('Done');
+    if (observer)  observer.disconnect();
+    if (pollTimer) clearInterval(pollTimer);
   }
 
   // ── Core action logic ──────────────────────────────────────────────────────
@@ -191,23 +190,23 @@
         if (tile) {
           LOG('Account tile — clicking.');
           flashIndicator('Selecting account…');
-          act(() => tile.click());
+          act('tile', () => tile.click());
           return;
         }
       }
 
       const passInput  = document.querySelector('input[type="password"]');
       const emailInput = document.querySelector('input[type="email"]');
-      const emailVisible = emailInput && emailInput.offsetParent !== null;
-      const passVisible  = passInput  && passInput.offsetParent  !== null;
+      const emailVisible = visibleInput('email');
+      const passVisible  = visibleInput('password');
 
       // 2. Password-only page
       if (settings.actions.passwordPage && passVisible && !emailVisible) {
         LOG('Password page — filling.');
         flashIndicator('Filling password…');
-        act(() => {
+        act('password', () => {
           fillInput(passInput, settings.password);
-          setTimeout(clickSignIn, 300);
+          setTimeout(clickSignIn, 100);
         });
         return;
       }
@@ -216,10 +215,15 @@
       if (settings.actions.emailPasswordPage && emailVisible) {
         LOG('Email + password page — filling.');
         flashIndicator('Filling credentials…');
-        act(() => {
+        act('email', () => {
           fillInput(emailInput, settings.email);
-          if (passVisible) fillInput(passInput, settings.password);
-          setTimeout(clickSignIn, 300);
+          if (passVisible) {
+            fillInput(passInput, settings.password);
+            setTimeout(clickSignIn, 100);
+          } else {
+            // Only email field — submit and wait for password page
+            setTimeout(clickSignIn, 100);
+          }
         });
         return;
       }
@@ -230,7 +234,7 @@
           if (btn.innerText && btn.innerText.includes('Approve with MFA')) {
             LOG('MFA button — clicking.');
             flashIndicator('Triggering MFA…');
-            act(() => btn.click());
+            act('mfa', () => btn.click());
             return;
           }
         }
@@ -241,11 +245,18 @@
   }
 
   // ── Helpers ────────────────────────────────────────────────────────────────
-  function act(fn) {
+  function visibleInput(type) {
+    const el = document.querySelector(`input[type="${type}"]`);
+    return el && el.offsetParent !== null ? el : null;
+  }
+
+  function act(actionName, fn) {
     acted = true;
+    lastAction = actionName;
     retryCount++;
     fn();
-    setTimeout(() => { acted = false; }, 3000);
+    // Short lock — clears quickly so the next page step can be handled fast
+    setTimeout(() => { acted = false; }, 600);
   }
 
   function fillInput(el, value) {

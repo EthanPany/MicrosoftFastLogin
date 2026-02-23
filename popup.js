@@ -14,7 +14,7 @@
   const DEFAULTS = {
     email: '',
     password: '',
-    retryLimit: 10,
+    retryLimit: 2,
     enabled: true,
     blockResources: true,
     skipLogoutPages: true,
@@ -137,7 +137,7 @@
   $('saveBtn').addEventListener('click', () => {
     const email    = $('emailInput').value.trim();
     const password = $('passwordInput').value;
-    const retryLimit = Math.max(1, Math.min(50, parseInt($('retryLimit').value, 10) || 10));
+    const retryLimit = Math.max(1, Math.min(50, parseInt($('retryLimit').value, 10) || 2));
 
     if (!email) { showStatus('Please enter your email.', 'err'); return; }
     if (!password) { showStatus('Please enter your password.', 'err'); return; }
@@ -186,6 +186,7 @@
   $('openOnboardingLink').addEventListener('click', (e) => {
     e.preventDefault();
     chrome.tabs.create({ url: chrome.runtime.getURL('onboarding.html') });
+    // GitHub: https://github.com/EthanPany/MicrosoftFastLogin
   });
 
   // ── Status toast ───────────────────────────────────────────────────────────
