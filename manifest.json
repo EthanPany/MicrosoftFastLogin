@@ -7,8 +7,7 @@
     "storage",
     "scripting",
     "tabs",
-    "declarativeNetRequest",
-    "declarativeNetRequestFeedback"
+    "declarativeNetRequest"
   ],
   "web_accessible_resources": [
     {
@@ -22,7 +21,8 @@
     }
   ],
   "host_permissions": [
-    "https://*/*"
+    "https://*.microsoftonline.com/*",
+    "https://*.duosecurity.com/*"
   ],
   "background": {
     "service_worker": "background.js"
